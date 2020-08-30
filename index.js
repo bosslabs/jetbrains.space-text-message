@@ -35,7 +35,7 @@ async function run() {
             core.error(error)
         })
 
-        req.write(message)
+        req.write(JSON.stringify({"text":message}))
         req.end()
 
     } catch (error) {
