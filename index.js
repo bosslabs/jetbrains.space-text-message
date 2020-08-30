@@ -1,21 +1,46 @@
 const core = require('@actions/core');
-const wait = require('./wait');
+const https = require("https");
 
 
 // most @actions toolkit packages have async methods
 async function run() {
-  try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    try {
+        const space_url = core.getInput('space_url');
+        const access_token = core.getInput('access_token');
+        const channel_id = core.getInput('channel_id');
+        const message = core.getInput('message');
+        core.info(`Sending message to teams channel: ${channel_id}`);
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
 
-    core.setOutput('time', new Date().toTimeString());
-  } catch (error) {
-    core.setFailed(error.message);
-  }
+
+        const options = {
+            host: space_url,
+            port: 443,
+            path: `/api/http/chats/channels/${channel_id}/messages`,
+            method: 'POST',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            res.on('data', (d) => {
+                core.setOutput('response', d);
+            })
+        })
+
+        req.on('error', (error) => {
+            core.error(error)
+        })
+
+        req.write(message)
+        req.end()
+
+    } catch (error) {
+        core.setFailed(error.message);
+    }
 }
 
 run();

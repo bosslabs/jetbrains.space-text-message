@@ -1,13 +1,21 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Send Space Text Message'
+description: 'Sends a text message to a channel in Jetbrains Space'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  space_url:
+    description: 'The URL your space is hosted at (eg: <name>.jetbrains.space)'
     required: true
-    default: '1000'
+  access_token:
+    description: 'Personal access token for Space API.'
+    required: true
+  channel_id:
+    description: 'The Channel ID you wish to send the messages to.'
+    required: true
+  message:
+    description: 'The text message you wish to send.'
+    required: true
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  response:
+    description: 'Returns the response from the Space API.'
 runs:
   using: 'node12'
   main: 'dist/index.js'
